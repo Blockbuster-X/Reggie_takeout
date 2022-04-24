@@ -16,11 +16,13 @@ import com.example.service.SetmealDishService;
 import com.example.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +46,9 @@ public class SetmealController {
 
     @Resource
     private DishService dishService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     /**
      * 添加套餐
@@ -162,10 +167,23 @@ public class SetmealController {
      */
     @GetMapping("list")
     public R<List<Setmeal>> list(@RequestParam Long categoryId, int status){
+
+        List<Setmeal> setmealList;
+
+        String key = "setmeal_" + categoryId + "_" + status;
+
+        setmealList = (List<Setmeal>) redisTemplate.opsForValue().get(key);
+
+        if (setmealList != null){
+            return R.success(setmealList);
+        }
+
         LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(categoryId != 0, Setmeal::getCategoryId, categoryId);
         wrapper.eq(status != 0, Setmeal::getStatus, status);
         wrapper.orderByAsc(Setmeal::getPrice).orderByDesc(Setmeal::getUpdateTime);
+
+        redisTemplate.opsForValue().set(key, setmealService.list(wrapper), 60, TimeUnit.MINUTES);
 
         return R.success(setmealService.list(wrapper));
     }
