@@ -57,7 +57,7 @@ public class LoginCheckFilter implements Filter {
          * 判断后台是否登录
          */
         if (request.getSession().getAttribute("employee") != null){
-            log.info("用户已登录，用户id为：{}", request.getSession().getAttribute("employee"));
+            log.info("后台用户已登录，用户id为：{}", request.getSession().getAttribute("employee"));
             // 获取用户 id 放入当前线程的 ThreadLocal 中
             Long id = (Long) request.getSession().getAttribute("employee");
             BaseContext.setCurrentId(id);

@@ -84,7 +84,6 @@ public class DishController {
         LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(Dish::getId, ids);
         List<Dish> list = dishService.list(wrapper);
-        System.out.println("1111111111111111111111111111111111111111111111111"+list.toString());
         list.stream().map((item) -> {
             String key = "dish_" + item.getCategoryId() + "_1";
             redisTemplate.delete(key);
