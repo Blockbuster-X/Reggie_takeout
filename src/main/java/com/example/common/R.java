@@ -10,7 +10,7 @@ import java.util.Map;
 public class R<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Integer code; //编码：1成功，0和其它数字为失败
+    private Integer code; //编码：1成功，0和其它// 数字为失败
 
     private String msg; //错误信息
 
